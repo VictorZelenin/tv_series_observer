@@ -1,7 +1,7 @@
 package data.dao;
 
 /**
- *
+ * DAO для TVSeries
  */
-public interface TVSeriesDAO {
+public class TVSeriesDAO {
 }

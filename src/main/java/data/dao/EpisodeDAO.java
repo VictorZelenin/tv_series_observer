@@ -1,7 +1,7 @@
 package data.dao;
 
 /**
- * Created by Admin on 29.03.2016.
+ * DAO для Episode
  */
-public interface EpisodeDAO {
+public class EpisodeDAO {
 }

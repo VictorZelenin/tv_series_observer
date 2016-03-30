@@ -1,7 +1,7 @@
 package data.dao;
 
 /**
- * Created by Admin on 29.03.2016.
+ * DAO для Season
  */
-public interface SeasonDAO {
+public class SeasonDAO {
 }

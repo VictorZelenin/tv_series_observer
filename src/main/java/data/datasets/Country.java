@@ -1,10 +1,54 @@
 package data.datasets;
 
+import javax.persistence.*;
+import java.io.Serializable;
+
 /**
  * Объект, описывающий страну
+ *
  */
-public class Country {
-    int id;
-    String name;
-    String language;
+@Entity
+@Table(name = "country")
+public class Country implements Serializable{
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private long id;
+
+    @Column(name = "name", unique = true)
+    private String name;
+
+    @Column(name = "language")
+    private String language;
+
+
+    public Country()
+    {
+    }
+
+    public Country(String name, String language) {
+        this.name = name;
+        this.language = language;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
+    }
 }

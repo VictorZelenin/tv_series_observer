@@ -1,7 +1,7 @@
 package data.dao;
 
 /**
- * Created by Admin on 29.03.2016.
+ * DAO для Translation
  */
-public interface TranslationDAO {
+public class TranslationDAO {
 }
