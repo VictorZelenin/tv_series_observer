@@ -1,6 +1,6 @@
 package data;
 
-import data.datasets.Country;
+import data.datasets.*;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
@@ -13,10 +13,15 @@ public class DBServiceImpl implements DBService, AutoCloseable{
     private final SessionFactory sessionFactory;
     private static DBServiceImpl dbService;
 
-    private DBServiceImpl()
+    public DBServiceImpl()
     {
         Configuration configuration = new Configuration();
         configuration.addAnnotatedClass(Country.class);
+        configuration.addAnnotatedClass(TVSeries.class);
+        configuration.addAnnotatedClass(Season.class);
+        configuration.addAnnotatedClass(Episode.class);
+        configuration.addAnnotatedClass(Translation.class);
+        configuration.addAnnotatedClass(EpisodeTranslation.class);
         configuration.configure("hibernate.cfg.xml");
         StandardServiceRegistryBuilder ssrb = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties());
         sessionFactory = configuration.buildSessionFactory(ssrb.build());

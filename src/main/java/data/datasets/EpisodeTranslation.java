@@ -21,25 +21,16 @@ public class EpisodeTranslation implements Serializable {
     @Column(name = "reference")
     private String reference;
 
-    @Column(name = "translation_id", nullable = false)
-    private long translationId;
-
-    @Column(name = "episode_id", nullable = false)
-    private long episodeId;
-
+    @ManyToOne
+    @JoinColumn(name = "episode_id", referencedColumnName="id")
     private Episode episode;
+
+    @ManyToOne
+    @JoinColumn(name = "translation_id", referencedColumnName="id")
     private Translation translation;
 
     public EpisodeTranslation() {
     }
-
-
-    public EpisodeTranslation(String reference, long episodeId, long translationId) {
-        this.reference = reference;
-        this.translationId = translationId;
-        this.episodeId = episodeId;
-    }
-
 
     public EpisodeTranslation(String reference, Episode episode, Translation translation) {
         this.reference = reference;
@@ -60,22 +51,6 @@ public class EpisodeTranslation implements Serializable {
         this.reference = reference;
     }
 
-    public long getTranslationId() {
-        return translationId;
-    }
-
-    public void setTranslationId(long translationId) {
-        this.translationId = translationId;
-    }
-
-    public long getEpisodeId() {
-        return episodeId;
-    }
-
-    public void setEpisodeId(long episodeId) {
-        this.episodeId = episodeId;
-    }
-
     public Episode getEpisode() {
         return episode;
     }
@@ -91,4 +66,6 @@ public class EpisodeTranslation implements Serializable {
     public void setTranslation(Translation translation) {
         this.translation = translation;
     }
+
+
 }

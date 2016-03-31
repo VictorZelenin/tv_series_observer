@@ -20,11 +20,12 @@ public class TVSeries  implements Serializable{
     @Column(name = "name", unique = true, nullable = false)
     private String name;
 
-    @Column(name = "country_id", nullable = false)
-    private long countryId;
-
-
+    @OneToMany(mappedBy = "tvSeries", fetch = FetchType.LAZY)
     private List<Season> seasons;//все сезоны данного сериала
+
+    @ManyToOne
+    @JoinColumn(name = "country_id", referencedColumnName="id")
+    private Country country;
 
     public TVSeries()
     {
@@ -34,22 +35,30 @@ public class TVSeries  implements Serializable{
     public TVSeries(String name, Country country)
     {
         this.name = name;
-        this.countryId = country.getId();
+        this.country = country;
     }
 
-    public TVSeries(String name, long countryId) {
-        this.name = name;
-        this.countryId = countryId;
-    }
-
-    public List<Season> getSeasons()//
-    {
-        synchronized (seasons) {
-            if (seasons != null)
-                return seasons;
-
-            //ленивое получение
-        }
+    public List<Season> getSeasons() {
         return seasons;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Country getCountry() {
+        return country;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setCountry(Country country) {
+        this.country = country;
     }
 }

@@ -3,6 +3,7 @@ package data.datasets;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.net.URL;
+import java.util.List;
 
 /**
  * Тип перевода/ озвучки, ссылка на сайт озвучки
@@ -21,6 +22,9 @@ public class Translation implements Serializable {
 
     @Column(name = "reference")
     private String reference = "";
+
+    @OneToMany(mappedBy = "translation", fetch = FetchType.LAZY)
+    private List<EpisodeTranslation> episodeTranslation;
 
 
     public Translation() {
@@ -50,5 +54,7 @@ public class Translation implements Serializable {
     public void setReference(String reference) {
         this.reference = reference;
     }
+
+
 
 }

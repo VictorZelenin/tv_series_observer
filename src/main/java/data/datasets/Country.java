@@ -2,6 +2,7 @@ package data.datasets;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * Объект, описывающий страну
@@ -23,9 +24,13 @@ public class Country implements Serializable{
     private String language;
 
 
+
+    @OneToMany(mappedBy = "country", fetch = FetchType.LAZY)
+    private List<TVSeries> tvSeries;
+
+
     public Country()
-    {
-    }
+    {}
 
     public Country(String name, String language) {
         this.name = name;
@@ -50,5 +55,9 @@ public class Country implements Serializable{
 
     public void setLanguage(String language) {
         this.language = language;
+    }
+
+    public List<TVSeries> getTvSeries() {
+        return tvSeries;
     }
 }

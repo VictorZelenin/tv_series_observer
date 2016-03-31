@@ -1,6 +1,12 @@
 package data.datasets;
 
+import javax.imageio.ImageIO;
 import javax.persistence.*;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
 
@@ -18,43 +24,37 @@ public class Season  implements Serializable {
     @Column(name = "id")
     private long id;
 
-    @Column(name = "tv_series_id", nullable = false)
-    private long tvSeriesId;
-
     @Column(name = "season_number", nullable = false)
     private int seasonNumber;
 
-    @Column(name = "season_image" )
+    @Column(name = "season_image")
+    @Lob
     private byte[] image;
 
 
+    @ManyToOne
+    @JoinColumn(name = "tv_series_id", referencedColumnName="id")
     private TVSeries tvSeries;//объект, описывающий сериал
 
 
+    @OneToMany(mappedBy = "season", fetch = FetchType.LAZY)
     private List<Episode> episodes;//список эпизодов сезона
 
 
     public Season() {
     }
 
-
-    public Season(long tvSeriesId, int seasonNumber) {
-        this.tvSeriesId = tvSeriesId;
+    public Season(int seasonNumber, TVSeries tvSeries, byte[] image) {
         this.seasonNumber = seasonNumber;
-    }
-
-
-    public Season(long tvSeriesId, int seasonNumber, byte[] image) {
-        this.tvSeriesId = tvSeriesId;
-        this.seasonNumber = seasonNumber;
+        this.tvSeries = tvSeries;
         this.image = image;
     }
 
-
-
-    public long getTvSeriesId() {
-        return tvSeriesId;
+    public Season(int seasonNumber, TVSeries tvSeries) {
+        this.seasonNumber = seasonNumber;
+        this.tvSeries = tvSeries;
     }
+
 
     public int getSeasonNumber() {
         return seasonNumber;
@@ -64,12 +64,12 @@ public class Season  implements Serializable {
         this.seasonNumber = seasonNumber;
     }
 
-    public byte[] getImage() {
-        return image;
+    public BufferedImage getImage() throws IOException{
+        return ImageIO.read(new ByteArrayInputStream(image));
     }
 
-    public void setImage(byte[] image) {
-        this.image = image;
+    public void setImage(BufferedImage image) {
+        this.image = ((DataBufferByte)image.getRaster().getDataBuffer()).getData();
     }
 
     public TVSeries getTvSeries() {
@@ -84,4 +84,6 @@ public class Season  implements Serializable {
     public List<Episode> getEpisodes() {
         return episodes;
     }
+
+
 }

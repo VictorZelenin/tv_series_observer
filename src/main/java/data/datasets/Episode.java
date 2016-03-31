@@ -2,6 +2,7 @@ package data.datasets;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * Эпизод — одна серия
@@ -20,12 +21,13 @@ public class Episode implements Serializable{
     private int number;
 
 
-    @Column(name = "season_id", nullable = false)
-    private long seasonId;
 
-
+    @ManyToOne
+    @JoinColumn(name = "season_id", referencedColumnName="id")
     private Season season;
 
+    @OneToMany(mappedBy = "episode", fetch = FetchType.LAZY)
+    private List<EpisodeTranslation> episodeTranslations;
 
     public Episode() {
     }
@@ -34,11 +36,6 @@ public class Episode implements Serializable{
     public Episode(int number, Season season) {
         this.number = number;
         this.season = season;
-    }
-
-    public Episode(int number, long seasonId) {
-        this.number = number;
-        this.seasonId = seasonId;
     }
 
     public long getId() {
@@ -53,14 +50,6 @@ public class Episode implements Serializable{
         this.number = number;
     }
 
-    public long getSeasonId() {
-        return seasonId;
-    }
-
-    public void setSeasonId(long seasonId) {
-        this.seasonId = seasonId;
-    }
-
     public Season getSeason() {
         return season;
     }
@@ -69,4 +58,7 @@ public class Episode implements Serializable{
         this.season = season;
     }
 
+    public List<EpisodeTranslation> getEpisodeTranslations() {
+        return episodeTranslations;
+    }
 }
