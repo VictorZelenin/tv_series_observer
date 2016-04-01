@@ -8,4 +8,5 @@ package data;
  * Или измените данные параметры в resources/hibernate.cfg.xml
  */
 public class DBFirstFill {
+
 }

@@ -58,6 +58,7 @@ public class Country implements Serializable{
     }
 
     public List<TVSeries> getTvSeries() {
+        tvSeries.size();
         return tvSeries;
     }
 }

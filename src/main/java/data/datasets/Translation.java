@@ -26,7 +26,6 @@ public class Translation implements Serializable {
     @OneToMany(mappedBy = "translation", fetch = FetchType.LAZY)
     private List<EpisodeTranslation> episodeTranslation;
 
-
     public Translation() {
     }
 
@@ -56,5 +55,13 @@ public class Translation implements Serializable {
     }
 
 
+    public long getId() {
+        return id;
+    }
+
+    public List<EpisodeTranslation> getEpisodeTranslation() {
+        episodeTranslation.size();
+        return episodeTranslation;
+    }
 
 }

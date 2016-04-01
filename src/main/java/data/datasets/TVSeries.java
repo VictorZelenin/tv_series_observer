@@ -39,6 +39,7 @@ public class TVSeries  implements Serializable{
     }
 
     public List<Season> getSeasons() {
+        seasons.size();
         return seasons;
     }
 

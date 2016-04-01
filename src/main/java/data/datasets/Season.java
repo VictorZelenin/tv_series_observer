@@ -82,6 +82,7 @@ public class Season  implements Serializable {
 
 
     public List<Episode> getEpisodes() {
+        episodes.size();
         return episodes;
     }
 

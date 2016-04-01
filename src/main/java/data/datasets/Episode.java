@@ -59,6 +59,7 @@ public class Episode implements Serializable{
     }
 
     public List<EpisodeTranslation> getEpisodeTranslations() {
+        episodeTranslations.size();
         return episodeTranslations;
     }
 }

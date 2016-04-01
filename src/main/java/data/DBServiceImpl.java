@@ -13,7 +13,7 @@ public class DBServiceImpl implements DBService, AutoCloseable{
     private final SessionFactory sessionFactory;
     private static DBServiceImpl dbService;
 
-    public DBServiceImpl()
+    private DBServiceImpl()
     {
         Configuration configuration = new Configuration();
         configuration.addAnnotatedClass(Country.class);
@@ -29,8 +29,7 @@ public class DBServiceImpl implements DBService, AutoCloseable{
 
     public static synchronized DBServiceImpl getInstance()
     {
-        if (dbService == null)
-        {
+        if (dbService == null) {
             dbService = new DBServiceImpl();
         }
         return dbService;
@@ -56,7 +55,15 @@ public class DBServiceImpl implements DBService, AutoCloseable{
     }
 
 
-
+    //для ручной работы с сессией
+    //обязательно вызывать метод close после работы с объектом
+    public Session getSession()
+    {
+        synchronized (dbService)
+        {
+            return sessionFactory.openSession();
+        }
+    }
 
 
 }

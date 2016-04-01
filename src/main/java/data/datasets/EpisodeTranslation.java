@@ -3,6 +3,7 @@ package data.datasets;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.net.URL;
+import java.util.Date;
 
 /**
  * Перевод (озвучка) определённого эпизода
@@ -20,6 +21,18 @@ public class EpisodeTranslation implements Serializable {
 
     @Column(name = "reference")
     private String reference;
+
+    @Column(name = "date")
+    @Temporal(TemporalType.DATE)
+    private Date date;
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
 
     @ManyToOne
     @JoinColumn(name = "episode_id", referencedColumnName="id")
@@ -66,6 +79,8 @@ public class EpisodeTranslation implements Serializable {
     public void setTranslation(Translation translation) {
         this.translation = translation;
     }
+
+
 
 
 }
