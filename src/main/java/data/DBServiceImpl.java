@@ -59,10 +59,16 @@ public class DBServiceImpl implements DBService, AutoCloseable{
     //обязательно вызывать метод close после работы с объектом
     public Session getSession()
     {
-        synchronized (dbService)
+        synchronized (sessionFactory)
         {
             return sessionFactory.openSession();
         }
+    }
+
+    //сохраняет все изменения для объектов, вызванных данной сессией
+    public void saveAllChanges(Session session)
+    {
+        session.flush();
     }
 
 

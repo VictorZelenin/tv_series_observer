@@ -2,6 +2,7 @@ package data.datasets;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -20,6 +21,13 @@ public class TVSeries  implements Serializable{
     @Column(name = "name", unique = true, nullable = false)
     private String name;
 
+    @Column(name = "begin_date")
+    @Temporal(TemporalType.DATE)
+    private Date beginDate;
+
+    @Column(name = "imdb")
+    private float rating;
+
     @OneToMany(mappedBy = "tvSeries", fetch = FetchType.LAZY)
     private List<Season> seasons;//все сезоны данного сериала
 
@@ -36,6 +44,13 @@ public class TVSeries  implements Serializable{
     {
         this.name = name;
         this.country = country;
+    }
+
+    public TVSeries(String name, Country country, Date beginDate, float rating) {
+        this.name = name;
+        this.country = country;
+        this.beginDate = beginDate;
+        this.rating = rating;
     }
 
     public List<Season> getSeasons() {

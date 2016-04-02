@@ -22,17 +22,10 @@ public class EpisodeTranslation implements Serializable {
     @Column(name = "reference")
     private String reference;
 
-    @Column(name = "date")
+    @Column(name = "date", nullable = false)
     @Temporal(TemporalType.DATE)
     private Date date;
 
-    public Date getDate() {
-        return date;
-    }
-
-    public void setDate(Date date) {
-        this.date = date;
-    }
 
     @ManyToOne
     @JoinColumn(name = "episode_id", referencedColumnName="id")
@@ -43,14 +36,22 @@ public class EpisodeTranslation implements Serializable {
     private Translation translation;
 
     public EpisodeTranslation() {
+        date = new Date();
     }
 
     public EpisodeTranslation(String reference, Episode episode, Translation translation) {
         this.reference = reference;
         this.episode = episode;
         this.translation = translation;
+        date = new Date();
     }
 
+    public EpisodeTranslation(String reference, Episode episode, Translation translation, Date date) {
+        this.reference = reference;
+        this.episode = episode;
+        this.translation = translation;
+        this.date = date;
+    }
 
     public long getId() {
         return id;
@@ -80,7 +81,27 @@ public class EpisodeTranslation implements Serializable {
         this.translation = translation;
     }
 
+    public Season getSeason()
+    {
+        return episode.getSeason();
+    }
 
+    public TVSeries getTVSeries()
+    {
+        return getSeason().getTvSeries();
+    }
 
+    public Country getCountry()
+    {
+        return getTVSeries().getCountry();
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
 
 }

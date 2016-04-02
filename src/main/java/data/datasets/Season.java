@@ -27,8 +27,8 @@ public class Season  implements Serializable {
     @Column(name = "season_number", nullable = false)
     private int seasonNumber;
 
+    //@Lob
     @Column(name = "season_image")
-    @Lob
     private byte[] image;
 
 

@@ -54,6 +54,11 @@ public class Episode implements Serializable{
         return season;
     }
 
+    public TVSeries getTVSeries()
+    {
+        return season.getTvSeries();
+    }
+
     public void setSeason(Season season) {
         this.season = season;
     }
