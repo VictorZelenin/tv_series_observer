@@ -26,7 +26,7 @@ public class TVSeries  implements Serializable{
     private Date beginDate;
 
     @Column(name = "imdb")
-    private float rating;
+    private Float rating;
 
     @OneToMany(mappedBy = "tvSeries", fetch = FetchType.LAZY)
     private List<Season> seasons;//все сезоны данного сериала
@@ -76,5 +76,21 @@ public class TVSeries  implements Serializable{
 
     public void setCountry(Country country) {
         this.country = country;
+    }
+
+    public Date getBeginDate() {
+        return beginDate;
+    }
+
+    public void setBeginDate(Date beginDate) {
+        this.beginDate = beginDate;
+    }
+
+    public float getRating() {
+        return rating;
+    }
+
+    public void setRating(float rating) {
+        this.rating = rating;
     }
 }

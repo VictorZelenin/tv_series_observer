@@ -1,7 +1,6 @@
 package data.dao;
 
 import data.datasets.Country;
-import org.hibernate.Query;
 import org.hibernate.Session;
 
 import java.util.List;
@@ -9,11 +8,11 @@ import java.util.List;
 /**
  * DAO for country
  */
-public class CountryDAO {
-    public Session currentSession;
+public class CountryDAO extends DAO<Country> {
 
-    public CountryDAO(Session currentSession) {
-        this.currentSession = currentSession;
+    public CountryDAO(Session session)
+    {
+        super(session);
     }
 
     public Country get(long id)
@@ -24,7 +23,10 @@ public class CountryDAO {
     public Country get(String name)
     {
         try {
-            return (Country) currentSession.createSQLQuery("select * from country where name = '" + name + "';").addEntity(Country.class).list().get(0);
+            return (Country) currentSession.createSQLQuery("select * from country where name = '" + name + "';")
+                    .addEntity(Country.class)
+                    .list()
+                    .get(0);
         }
         catch (NullPointerException | IndexOutOfBoundsException e)
         {
@@ -34,7 +36,9 @@ public class CountryDAO {
 
     public List<Country> getAll()
     {
-        return currentSession.createSQLQuery("select * from country").addEntity(Country.class).list();
+        return currentSession.createSQLQuery("select * from country")
+                .addEntity(Country.class)
+                .list();
     }
 
     public void save(Country country)
@@ -45,7 +49,10 @@ public class CountryDAO {
 
     public void update(Country country)
     {
-        currentSession.createSQLQuery("update country set name = '" + country.getName() +  "', language='" + country.getLanguage() + "' where id =" + country.getId() + ";").executeUpdate();
+        currentSession.createSQLQuery("update country set name = '" + country.getName() +
+                "', language='" + country.getLanguage() +
+                "' where id =" + country.getId() + ";")
+                .executeUpdate();
     }
 
     public void delete(Country country)
@@ -63,7 +70,5 @@ public class CountryDAO {
         currentSession.createSQLQuery("delete from country;").executeUpdate();
     }
 
-    public Session getCurrentSession() {
-        return currentSession;
-    }
+
 }

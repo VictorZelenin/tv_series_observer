@@ -57,12 +57,17 @@ public class EpisodeTranslation implements Serializable {
         return id;
     }
 
-    public String getReference() {
+    public String getPartialReference() {
         return reference;
     }
 
-    public void setReference(String reference) {
+    public void setPartialReference(String reference) {
         this.reference = reference;
+    }
+
+    public String getAbsoluteReference()
+    {
+        return translation.getReference() + reference;
     }
 
     public Episode getEpisode() {

@@ -86,5 +86,7 @@ public class Season  implements Serializable {
         return episodes;
     }
 
-
+    public long getId() {
+        return id;
+    }
 }
