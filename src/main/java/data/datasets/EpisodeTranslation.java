@@ -109,4 +109,23 @@ public class EpisodeTranslation implements Serializable {
         this.date = date;
     }
 
+
+    @Override
+    public int hashCode() {
+        return (int)id;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof EpisodeTranslation))
+            return false;
+        else
+            return ((EpisodeTranslation)obj).getId() == getId();
+    }
+
+    @Override
+    public String toString() {
+        return getEpisode().toString() + "\ntranslation: " + getTranslation().toString();
+    }
+
 }

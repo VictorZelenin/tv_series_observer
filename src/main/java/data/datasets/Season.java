@@ -89,4 +89,23 @@ public class Season  implements Serializable {
     public long getId() {
         return id;
     }
+
+
+    @Override
+    public int hashCode() {
+        return (int)id;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof Season))
+            return false;
+        else
+            return ((Season)obj).getId() == getId();
+    }
+
+    @Override
+    public String toString() {
+        return tvSeries.toString() + "\nseason " + getSeasonNumber();
+    }
 }

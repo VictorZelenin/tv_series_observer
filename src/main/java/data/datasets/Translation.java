@@ -64,4 +64,23 @@ public class Translation implements Serializable {
         return episodeTranslation;
     }
 
+
+    @Override
+    public int hashCode() {
+        return (int)id;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof Translation))
+            return false;
+        else
+            return ((Translation)obj).getId() == getId();
+    }
+
+    @Override
+    public String toString() {
+        return getType();
+    }
+
 }

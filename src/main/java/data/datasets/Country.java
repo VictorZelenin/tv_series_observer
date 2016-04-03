@@ -61,4 +61,22 @@ public class Country implements Serializable{
         tvSeries.size();
         return tvSeries;
     }
+
+    @Override
+    public int hashCode() {
+        return (int)id;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof Country))
+            return false;
+        else
+            return ((Country)obj).getId() == getId();
+    }
+
+    @Override
+    public String toString() {
+        return getName();
+    }
 }

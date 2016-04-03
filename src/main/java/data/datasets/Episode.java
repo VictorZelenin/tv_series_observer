@@ -67,4 +67,22 @@ public class Episode implements Serializable{
         episodeTranslations.size();
         return episodeTranslations;
     }
+
+    @Override
+    public int hashCode() {
+        return (int)id;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof Episode))
+            return false;
+        else
+            return ((Episode)obj).getId() == getId();
+    }
+
+    @Override
+    public String toString() {
+        return getSeason().toString() + "\nepisode " + getNumber();
+    }
 }

@@ -93,4 +93,22 @@ public class TVSeries  implements Serializable{
     public void setRating(float rating) {
         this.rating = rating;
     }
+
+    @Override
+    public int hashCode() {
+        return (int)id;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof TVSeries))
+            return false;
+        else
+            return ((TVSeries)obj).getId() == getId();
+    }
+
+    @Override
+    public String toString() {
+        return getName();
+    }
 }
