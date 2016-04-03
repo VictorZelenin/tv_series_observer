@@ -1,5 +1,9 @@
 package data;
 
+import org.hibernate.Session;
+
+import java.io.*;
+
 /**
  * Класс, отвечающий за первое заполнение базы данных
  * Для работы необходим интернет и созданная база данных с названием "TVSeriesObserverDB"
@@ -9,8 +13,30 @@ package data;
  */
 public class DBFirstFill {
 
-    public static void setTestData()
-    {
+    private static String pathToResourcesSQL = "src" + File.separator + "main" + File.separator + "resources" + File.separator + "sql" + File.separator;
 
+    public static void setTestData(Session session) throws IOException
+    {
+        File file = new File(pathToResourcesSQL + "fill_with_sample_data.sql");
+        executeSQLFromFile(session, file);
     }
+
+    public static void deleteAllData(Session session) throws IOException
+    {
+        File file = new File(pathToResourcesSQL + "delete_all.sql");
+        executeSQLFromFile(session, file);
+    }
+
+    public static void executeSQLFromFile(Session session, File file) throws IOException
+    {
+        BufferedReader reader = new BufferedReader(new FileReader(file));
+        String query = "";
+        while (reader.ready())
+        {
+            query += " " + reader.readLine();
+        }
+        query += "";
+        session.createSQLQuery(query).executeUpdate();
+    }
+
 }
