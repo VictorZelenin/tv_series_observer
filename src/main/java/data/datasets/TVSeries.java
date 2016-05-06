@@ -11,7 +11,7 @@ import java.util.List;
  */
 @Entity
 @Table(name = "tv_series")
-public class TVSeries  implements Serializable{
+public class TVSeries implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,16 +32,14 @@ public class TVSeries  implements Serializable{
     private List<Season> seasons;//все сезоны данного сериала
 
     @ManyToOne
-    @JoinColumn(name = "country_id", referencedColumnName="id")
+    @JoinColumn(name = "country_id", referencedColumnName = "id")
     private Country country;
 
-    public TVSeries()
-    {
+    public TVSeries() {
 
     }
 
-    public TVSeries(String name, Country country)
-    {
+    public TVSeries(String name, Country country) {
         this.name = name;
         this.country = country;
     }
@@ -96,7 +94,7 @@ public class TVSeries  implements Serializable{
 
     @Override
     public int hashCode() {
-        return (int)id;
+        return (int) id;
     }
 
     @Override
@@ -104,7 +102,7 @@ public class TVSeries  implements Serializable{
         if (!(obj instanceof TVSeries))
             return false;
         else
-            return ((TVSeries)obj).getId() == getId();
+            return ((TVSeries) obj).getId() == getId();
     }
 
     @Override

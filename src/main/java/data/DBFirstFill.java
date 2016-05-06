@@ -27,6 +27,20 @@ public class DBFirstFill {
         executeSQLFromFile(session, file);
     }
 
+
+    //используйте только после загрузки базовых данных
+    public static void setIndexes(Session session) throws IOException
+    {
+        File file = new File(pathToResourcesSQL + "set_indexes.sql");
+        executeSQLFromFile(session, file);
+    }
+
+    public static void dropIndexes(Session session) throws IOException
+    {
+        File file = new File(pathToResourcesSQL + "drop_indexes.sql");
+        executeSQLFromFile(session, file);
+    }
+
     public static void executeSQLFromFile(Session session, File file) throws IOException
     {
         BufferedReader reader = new BufferedReader(new FileReader(file));
@@ -39,4 +53,7 @@ public class DBFirstFill {
         session.createSQLQuery(query).executeUpdate();
     }
 
+    public static String getPathToResourcesSQL() {
+        return pathToResourcesSQL;
+    }
 }

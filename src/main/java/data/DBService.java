@@ -8,7 +8,9 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
+import org.hibernate.type.StandardBasicTypes;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -18,6 +20,8 @@ import java.util.*;
 public class DBService implements  AutoCloseable{
     private final SessionFactory sessionFactory;
     private static DBService dbService;
+    private static SimpleDateFormat toSqlDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
 
     private DBService()
     {
@@ -70,6 +74,11 @@ public class DBService implements  AutoCloseable{
     }
 
 
+    public static SimpleDateFormat getToSqlDate() {
+        return toSqlDate;
+    }
+
+
     //сохраняет все изменения для объектов, вызванных данной сессией
     public void saveAllChanges(Session session)
     {
@@ -81,127 +90,183 @@ public class DBService implements  AutoCloseable{
     public List<EpisodeTranslation> getLastEpisodesTranslations(Session session, int n)
     {
         return session
-                .createSQLQuery("select * from country order by date desc")
+                .createSQLQuery("select * from episode_translation order by date desc limit " + n + ";")
                 .addEntity(EpisodeTranslation.class)
                 .list();
     }
 
 
     //получение записей из таблицы episode_translation в промежутке с fromDate по toDate
-    //по определённому сериалу/сезону/серии  + озвучке
-    public List<EpisodeTranslation> getEpisodesTranslations(Session session, Date fromDate, Date toDate, TVSeries tvSeries, Season season, Episode episode, Translation translation)
+    //по определённому сериалу/сезону/серии (если что-то не выбрано, передавать null)  + озвучке
+    public List<EpisodeTranslation> getEpisodesTranslations(Session session, Date fromDate, Date toDate, String tvSeriesName, Integer seasonNumber, Integer episodeNumber, String translationType)
     {
-        if (fromDate == null) {
-            Calendar calendar = new GregorianCalendar();
-            calendar.setTime(new Date());
-            calendar.add(Calendar.YEAR, -1000);
-            fromDate = calendar.getTime();
-        }
+        StringBuilder query = new StringBuilder("SELECT episode_translation.* FROM episode_translation ");
+        List<String> queryConditions = new LinkedList<>();
 
-        if (toDate == null)
+        if (translationType != null  && translationType != "")
         {
-            toDate = new Date();
+            query.append(" JOIN translation ON episode_translation.translation_id = translation.id ");
+            queryConditions.add(" translation.type = '" + translationType + "' ");
         }
 
-        List<EpisodeTranslation> allRecordsList = new EpisodeTranslationDAO(session).getAll();
-        List<EpisodeTranslation> resultList = new LinkedList<>();
-        boolean saveIt = true;
-        for (EpisodeTranslation episodeTranslation: resultList)
+        if (fromDate != null)
         {
-            if (!(episodeTranslation.getDate().compareTo(fromDate) >= 0 && episodeTranslation.getDate().compareTo(toDate) < 0))
-            {
-                saveIt = false;
-                continue;
-            }
-            if (episode != null && episode.getId() != episodeTranslation.getEpisode().getId())
-            {
-                saveIt = false;
-                continue;
-            }
-            if (translation != null && translation.getId() != episodeTranslation.getTranslation().getId())
-            {
-                saveIt = false;
-                continue;
-            }
-            if (season != null && season.getId() != episodeTranslation.getSeason().getId())
-            {
-                saveIt = false;
-                continue;
-            }
-            if (tvSeries != null && tvSeries.getId() != episodeTranslation.getTVSeries().getId())
-            {
-                saveIt = false;
-                continue;
-            }
-
-            if (saveIt)
-                resultList.add(episodeTranslation);
+            queryConditions.add(" episode_translation.date >= '" + getToSqlDate().format(fromDate) + "' ");
+        }
+        if (toDate != null)
+        {
+            queryConditions.add(" episode_translation.date <= '" + getToSqlDate().format(toDate) + "' ");
         }
 
-        return resultList;
+        if (tvSeriesName != null)
+        {
+            query.append(" JOIN tv_episode ON episode_translation.episode_id = tv_episode.id " +
+                    "JOIN season ON tv_episode.season_id = season.id " +
+                    "JOIN tv_series ON season.tv_series_id = tv_series.id ");
+            queryConditions.add(" tv_series.name = '" + tvSeriesName + "' ");
+
+            if (seasonNumber != null)
+            {
+                queryConditions.add(" season.season_number = " + seasonNumber + " ");
+
+                if (episodeNumber != null)
+                    queryConditions.add(" tv_episode.episode_number = " + episodeNumber + " ");
+            }
+        }
+
+
+        if (!queryConditions.isEmpty())
+        {
+            query.append(" WHERE ");
+            for (int i = 0; i < queryConditions.size() - 1; i++)
+            {
+                query.append(queryConditions.get(i));
+                query.append(" AND ");
+            }
+
+            query.append(queryConditions.get(queryConditions.size() - 1));
+            query.append(" ");
+        }
+        query.append(";");
+
+
+
+        return session.createSQLQuery(query.toString())
+                .addEntity(EpisodeTranslation.class)
+                .list();
     }
 
 
     //получение сериалов по параметрам
     public List<TVSeries> getTVSeries(Session session, TVSeriesSearchParameters tvSeriesSearchParameters)
     {
-        List<EpisodeTranslation> episodeTranslationsList = new EpisodeTranslationDAO(session).getAll();
-        Set<TVSeries> resultSet = new HashSet<>();
+        StringBuilder query = new StringBuilder("SELECT tv_series.* FROM tv_series ");
+        List<String> queryConditions = new LinkedList<>();
 
-        boolean saveIt = true;
-        for (EpisodeTranslation episodeTranslation : episodeTranslationsList)
+        if (tvSeriesSearchParameters != null)
         {
-            if (!tvSeriesSearchParameters.getInCountries().contains(episodeTranslation.getCountry())) {
-                saveIt = false;
-                continue;
-            }
-
-            if (tvSeriesSearchParameters.getNotInCountries().contains(episodeTranslation.getCountry())) {
-                saveIt = false;
-                continue;
-            }
-
-            if (!tvSeriesSearchParameters.getTranslations().contains(episodeTranslation.getTranslation())) {
-                saveIt = false;
-                continue;
-            }
-
-            if (tvSeriesSearchParameters.getMinDate().compareTo(episodeTranslation.getDate()) > 0)
+            if (tvSeriesSearchParameters.getTranslations().size() > 0)
             {
-                saveIt = false;
-                continue;
+                query.append(" JOIN season ON tv_series.id = season.tv_series_id " +
+                        "JOIN tv_episode ON season.id = tv_episode.season_id " +
+                        "JOIN episode_translation ON tv_episode.id = episode_translation.tv_episode_id ");
+
+                StringBuilder translations = new StringBuilder();
+                List<Translation> translationsList = new ArrayList<>(tvSeriesSearchParameters.getTranslations());
+                for (int i = 0; i < translationsList.size() - 1; i++)
+                    translations.append(translationsList.get(i).getId() + ", ");
+                translations.append(translationsList.get(translationsList.size() - 1).getId());
+
+                queryConditions.add(" episode_translation.translation_id IN (" + translations + ") ");
             }
 
-            if (tvSeriesSearchParameters.getMaxDate().compareTo(episodeTranslation.getDate()) < 0)
+            if (tvSeriesSearchParameters.getInCountries().size() > 0)
             {
-                saveIt = false;
-                continue;
+                List<Country> countriesList = new ArrayList<>(tvSeriesSearchParameters.getInCountries());
+                StringBuilder countries = new StringBuilder();
+                for (int i = 0; i < countriesList.size() - 1; i++)
+                    countries.append(countriesList.get(i).getId() + ", ");
+                countries.append(countriesList.get(countriesList.size() - 1).getId());
+
+                queryConditions.add(" tv_series.country_id IN (" + countries + ") ");
             }
 
-            if (tvSeriesSearchParameters.getMinRating().compareTo(episodeTranslation.getTVSeries().getRating()) > 0)
+            if (tvSeriesSearchParameters.getNotInCountries().size() > 0)
             {
-                saveIt = false;
-                continue;
+                List<Country> countriesList = new ArrayList<>(tvSeriesSearchParameters.getNotInCountries());
+                StringBuilder countries = new StringBuilder();
+                for (int i = 0; i < countriesList.size() - 1; i++)
+                    countries.append(countriesList.get(i).getId() + ", ");
+                countries.append(countriesList.get(countriesList.size() - 1).getId());
+
+                queryConditions.add(" tv_series.country_id NOT IN (" + countries + ") ");
             }
 
-            if (saveIt)
-                resultSet.add(episodeTranslation.getTVSeries());
+            if (tvSeriesSearchParameters.getMinRating() != null)
+            {
+                queryConditions.add(" tv_series.imdb >= " + tvSeriesSearchParameters.getMinRating() + " ");
+            }
+
+            if (tvSeriesSearchParameters.getMinDate() != null)
+            {
+                queryConditions.add(" tv_series.begin_date >= " + getToSqlDate().format(tvSeriesSearchParameters.getMinDate()) + " ");
+            }
+
+            if (tvSeriesSearchParameters.getMaxDate() != null)
+            {
+                queryConditions.add(" tv_series.begin_date < " + getToSqlDate().format(tvSeriesSearchParameters.getMaxDate()) + " ");
+            }
         }
 
-        List<TVSeries> resultList = new ArrayList<>(resultSet);
+        if (!queryConditions.isEmpty())
+        {
+            query.append("  WHERE ");
+            for (int i = 0; i < queryConditions.size() - 1; i++)
+            {
+                query.append(queryConditions.get(i));
+                query.append(" AND ");
+            }
 
-        //тут должна быть сортировка, но я всё равно буду переделывать на более оптимальное
+            query.append(queryConditions.get(queryConditions.size() - 1));
+            query.append(" ");
 
-        return resultList;
+        }
+
+        if (tvSeriesSearchParameters.getSortBy() != null)
+        {
+            query.append(" ORDER BY ");
+            switch (tvSeriesSearchParameters.getSortBy())
+            {
+                case NAME :
+                    query.append(" tv_series.name ");
+                    break;
+                case RATING :
+                    query.append(" tv_series.imdb ");
+                    break;
+                case DATE :
+                    query.append(" tv_series.begin_date ");
+                    break;
+            }
+
+            if (!tvSeriesSearchParameters.isAscendingOrder())
+                query.append(" DESC ");
+
+        }
+
+        query.append(";");
+
+        return session.createSQLQuery(query.toString())
+                .addEntity(TVSeries.class)
+                .list();
     }
 
     //параметры для запроса getTVSeries()
     public static class TVSeriesSearchParameters
     {
-        private Set<Country> inCountries;
-        private Set<Country> notInCountries;
+        private Set<Country> inCountries = new HashSet<>();
+        private Set<Country> notInCountries = new HashSet<>();
 
-        private Set<Translation> translations;
+        private Set<Translation> translations = new HashSet<>();
 
         private Date minDate;
         private Date maxDate;
@@ -209,31 +274,13 @@ public class DBService implements  AutoCloseable{
         private Float minRating;
 
         private SortBy sortBy;
-        private boolean sortOrder; // true — в порядке возрастания, false — в порядке убывания
+        private boolean ascendingOrder = false; // true — в порядке возрастания, false — в порядке убывания
 
-        public enum SortBy
+        public static enum SortBy
         {
             RATING,
-            YEAR,
+            DATE,
             NAME
-        }
-
-        public TVSeriesSearchParameters()
-        {
-            inCountries = new HashSet<>();
-            notInCountries = new HashSet<>();
-
-            translations = new HashSet<>();
-
-            Calendar calendar = new GregorianCalendar();
-            calendar.setTime(new Date());
-            calendar.add(Calendar.YEAR, -1000);
-            minDate = calendar.getTime();
-            maxDate = new Date();
-
-            minRating = 0.0f;
-            sortBy = SortBy.NAME;
-            sortOrder = true;
         }
 
         public Set<Country> getInCountries() {
@@ -292,36 +339,32 @@ public class DBService implements  AutoCloseable{
             this.sortBy = sortBy;
         }
 
-        public boolean isSortOrder() {
-            return sortOrder;
+        public boolean isAscendingOrder() {
+            return ascendingOrder;
         }
 
-        public void setSortOrder(boolean sortOrder) {
-            this.sortOrder = sortOrder;
+        public void setAscendingOrder(boolean ascendingOrder) {
+            this.ascendingOrder = ascendingOrder;
         }
     }
-
 
     //Количество сериалов по странам
     public Map<Country, Integer> getTVSeriesAmountPerCountry(Session session)
     {
-        List<TVSeries> tvSeriesList = new TVSeriesDAO(session).getAll();
-        List<Country> countries = new CountryDAO(session).getAll();
-
         Map<Country, Integer> resultMap = new HashMap<>();
 
-        for (Country country : countries)
-            resultMap.put(country, 0);
+        List<Object[]> resultList = session.createSQLQuery("SELECT country.*,  COUNT(tv_series.id) AS tv_series_quantity" +
+                " FROM country LEFT JOIN tv_series ON country.id = tv_series.country_id" +
+                " GROUP BY country.id;")
+                .addEntity("country", Country.class)
+                .addScalar("tv_series_quantity", StandardBasicTypes.INTEGER)
+                .list();
 
-        for (TVSeries tvSeries : tvSeriesList)
+        for (Object[] row: resultList)
         {
-                resultMap.put(tvSeries.getCountry(), resultMap.get(tvSeries.getCountry()) + 1);
+            resultMap.put((Country)row[0], (Integer)row[1]);
         }
-
         return resultMap;
     }
-
-
-
 
 }
