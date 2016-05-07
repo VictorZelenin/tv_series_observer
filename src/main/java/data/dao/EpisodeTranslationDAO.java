@@ -42,32 +42,52 @@ public class EpisodeTranslationDAO extends DAO<EpisodeTranslation>{
 
     public EpisodeTranslation get(Episode episode, Translation translation)
     {
-        return get(episode.getId(), translation.getId());
+        try {
+            return get(episode.getId(), translation.getId());
+        } catch (NullPointerException e) {
+            return null;
+        }
     }
 
 
     public EpisodeTranslation get(String tvSeriesName, int seasonNumber, int episodeNumber,long translationId)
     {
         EpisodeDAO episodeDAO = new EpisodeDAO(currentSession);
-        return get(episodeDAO.get(tvSeriesName, seasonNumber, episodeNumber).getId(), translationId);
+        try {
+            return get(episodeDAO.get(tvSeriesName, seasonNumber, episodeNumber).getId(), translationId);
+        } catch (NullPointerException e) {
+            return null;
+        }
     }
 
 
     public EpisodeTranslation get(String tvSeriesName, int seasonNumber, int episodeNumber,Translation translation)
     {
-        return get(tvSeriesName, seasonNumber, episodeNumber, translation.getId());
+        try {
+            return get(tvSeriesName, seasonNumber, episodeNumber, translation.getId());
+        } catch (NullPointerException e) {
+            return null;
+        }
     }
 
 
     public EpisodeTranslation get(Season season, int episodeNumber, long translationId)
     {
-        return get(season.getTvSeries().getName(), season.getSeasonNumber(), episodeNumber, translationId);
+        try {
+            return get(season.getTvSeries().getName(), season.getSeasonNumber(), episodeNumber, translationId);
+        } catch (NullPointerException e) {
+            return null;
+        }
     }
 
 
     public EpisodeTranslation get(Season season, int episodeNumber, Translation translation)
     {
-        return get(season, episodeNumber, translation.getId());
+        try {
+            return get(season, episodeNumber, translation.getId());
+        } catch (NullPointerException e) {
+            return null;
+        }
     }
 
 

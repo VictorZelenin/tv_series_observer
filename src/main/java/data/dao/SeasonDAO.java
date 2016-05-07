@@ -40,12 +40,20 @@ public class SeasonDAO extends DAO<Season>{
 
     public Season get(TVSeries tvSeries, int seasonNumber)
     {
-        return get(tvSeries.getId(), seasonNumber);
+        try {
+            return get(tvSeries.getId(), seasonNumber);
+        } catch (NullPointerException e) {
+            return null;
+        }
     }
 
     public Season get(String tvSeriesName, int seasonNumber)
     {
-        return get(new TVSeriesDAO(currentSession).get(tvSeriesName), seasonNumber);
+        try {
+            return get(new TVSeriesDAO(currentSession).get(tvSeriesName), seasonNumber);
+        } catch (NullPointerException e) {
+            return null;
+        }
     }
 
     @Override

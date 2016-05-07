@@ -42,19 +42,31 @@ public class EpisodeDAO extends DAO<Episode>{
 
     public Episode get(Season season, int episodeNumber)
     {
-        return get(season.getId(), episodeNumber);
+        try {
+            return get(season.getId(), episodeNumber);
+        } catch (NullPointerException e) {
+            return null;
+        }
     }
 
     public Episode get(TVSeries tvSeries, int seasonNumber, int episodeNumber)
     {
         SeasonDAO seasonDAO = new SeasonDAO(currentSession);
-        return get(seasonDAO.get(tvSeries, seasonNumber), episodeNumber);
+        try {
+            return get(seasonDAO.get(tvSeries, seasonNumber), episodeNumber);
+        } catch (NullPointerException e) {
+            return null;
+        }
     }
 
     public Episode get(String tvSeriesName, int seasonNumber, int episodeNumber)
     {
         SeasonDAO seasonDAO = new SeasonDAO(currentSession);
-        return get(seasonDAO.get(tvSeriesName, seasonNumber), episodeNumber);
+        try {
+            return get(seasonDAO.get(tvSeriesName, seasonNumber), episodeNumber);
+        } catch (NullPointerException e) {
+            return null;
+        }
     }
 
     @Override
