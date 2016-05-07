@@ -8,7 +8,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-public class Coldfilm implements TVSeriesTranslationSite{
+public class ColdFilm implements TVSeriesTranslationSite{
     @Override
     public List<EpisodeTranslation> getAllEpisodes(Session session) {
         return new LinkedList<>();

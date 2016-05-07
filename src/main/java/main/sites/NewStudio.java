@@ -4,17 +4,19 @@ package main.sites;
 import data.datasets.EpisodeTranslation;
 import org.hibernate.Session;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 public class NewStudio implements TVSeriesTranslationSite{
     @Override
     public List<EpisodeTranslation> getAllEpisodes(Session session) {
-        return null;
+        return new ArrayList<>();
     }
 
     @Override
     public List<EpisodeTranslation> getNewEpisodes(Session session) {
-        return null;
+        return new ArrayList<>();
     }
 }

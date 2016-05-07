@@ -22,9 +22,9 @@ public class EpisodesTranslationsData {
 
     private void addBasicSites() {
         sites.add(new AmoviesRusSub());
-        sites.add(new Lostfilm());
+        sites.add(new LostFilm());
 //        sites.add(new NewStudio());
-//        sites.add(new Coldfilm());
+//        sites.add(new ColdFilm());
 //        sites.add(new AlternativeProduction());
     }
 

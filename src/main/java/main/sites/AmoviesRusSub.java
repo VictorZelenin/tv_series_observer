@@ -62,6 +62,8 @@ public class AmoviesRusSub implements TVSeriesTranslationSite {
 
         try {
             Document document = Jsoup.connect(String.format(PAGES_LINK, pageNumber)).get();
+
+            mainCicle:
             while (true) {
                 Elements tvSeriesElements = document.select("#dle-content").first().children();
                 for (Element tvSeriesElement : tvSeriesElements) {
@@ -69,37 +71,36 @@ public class AmoviesRusSub implements TVSeriesTranslationSite {
                     if (tvSeriesElement.nodeName().equals("li")) {
                         String stringTvSeriesLink = tvSeriesElement.select("a").attr("abs:href");
                         String tvSeriesName = tvSeriesElement.select("a").text();
-                        System.out.println("TVSeriesName: " + tvSeriesName);//delete this
 
                         int seasonNumber = 0;
                         seasonMatcher = seasonPattern.matcher(tvSeriesElement.select("span").text());
                         if (seasonMatcher.find()) {
                             seasonNumber = Integer.parseInt(seasonMatcher.group());
                         }
-                        System.out.println("season: " + seasonNumber);
                         int episodeNumber = 0;
                         episodeNumberMatcher = episodeNumberPattern.matcher(tvSeriesElement.select("span").text());
                         if (episodeNumberMatcher.find()) {
                             episodeNumber = Integer.parseInt(episodeNumberMatcher.group());
                         }
-                        System.out.println("episode: " + episodeNumber);
 
                         bufferEpisodeTranslation = episodeTranslationDAO.get(tvSeriesName, seasonNumber, episodeNumber, translation);
 
                         isNew = bufferEpisodeTranslation == null;
 
-                        if (getAll || isNew) {
-                            try {
-                                if (getAll) {
-                                    episodesFromPage = getEpisodesFromPage(session, stringTvSeriesLink);
-                                } else {
-                                    episodesFromPage = getLastEpisodesFromPage(session, stringTvSeriesLink);
-                                }
-                            } catch (DataParsingException e) {
-                                continue;
-                            }
-                            episodeTranslationList.addAll(episodesFromPage);
+                        if (!isNew && !getAll) {
+                            break mainCicle;
                         }
+
+                        try {
+                            if (getAll) {
+                                episodesFromPage = getEpisodesFromPage(session, stringTvSeriesLink);
+                            } else {
+                                episodesFromPage = getLastEpisodesFromPage(session, stringTvSeriesLink);
+                            }
+                        } catch (DataParsingException e) {
+                            continue;
+                        }
+                        episodeTranslationList.addAll(episodesFromPage);
                     }
                 }
                 pageNumber++;
