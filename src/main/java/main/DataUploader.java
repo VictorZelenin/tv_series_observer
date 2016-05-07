@@ -59,7 +59,7 @@ public class DataUploader {
         episodesTranslationsData.fillWithBasicData();
     }
 
-    public void update() {
+    public void update() throws CantFindObjectException, ConnectionProblemsException {
         episodesTranslationsData.update();
     }
 
@@ -89,6 +89,12 @@ public class DataUploader {
                         sleep(sleepTime);
                 } catch (InterruptedException e) {
                     break;
+                } catch (CantFindObjectException e) {
+                    System.out.println("Cant find object while updating");// here need to be logging
+                    e.printStackTrace();
+                } catch (ConnectionProblemsException e) {
+                    System.out.println("Connection problems while updating");// here need to be logging
+                    e.printStackTrace();
                 }
             }
         }

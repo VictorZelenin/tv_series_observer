@@ -14,11 +14,6 @@ public class NewStudio implements TVSeriesTranslationSite{
     }
 
     @Override
-    public List<EpisodeTranslation> getNewEpisodes(Session session, Date date) {
-        return null;
-    }
-
-    @Override
     public List<EpisodeTranslation> getNewEpisodes(Session session) {
         return null;
     }

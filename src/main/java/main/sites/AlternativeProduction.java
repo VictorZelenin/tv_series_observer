@@ -5,21 +5,17 @@ import data.datasets.EpisodeTranslation;
 import org.hibernate.Session;
 
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 public class AlternativeProduction implements TVSeriesTranslationSite{
     @Override
     public List<EpisodeTranslation> getAllEpisodes(Session session) {
-        return null;
-    }
-
-    @Override
-    public List<EpisodeTranslation> getNewEpisodes(Session session, Date date) {
-        return null;
+        return new LinkedList<>();
     }
 
     @Override
     public List<EpisodeTranslation> getNewEpisodes(Session session) {
-        return null;
+        return new LinkedList<>();
     }
 }

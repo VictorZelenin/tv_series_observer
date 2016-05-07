@@ -54,11 +54,13 @@ public class TVSeriesData {
 
 
     void fillWithBasicData() throws CantFindObjectException,
-            ConnectionProblemsException, DataParsingException {
+            ConnectionProblemsException {
         for (String tvSeriesName : BASIC_TV_SERIES) {
             try {
                 addNewTVSeries(tvSeriesName);
             } catch (ObjectAlreadyExistException e) {
+                e.printStackTrace(); // add logging here
+            } catch (DataParsingException e) {
                 e.printStackTrace(); // add logging here
             }
         }
@@ -75,7 +77,7 @@ public class TVSeriesData {
         }
     }
 
-    public String tvSeriesImdbUrl(String name) throws CantFindObjectException, ConnectionProblemsException {
+    private String tvSeriesImdbUrl(String name) throws CantFindObjectException, ConnectionProblemsException {
         String imdbURL;
         try {
             String url = String.format(IMDB_SEARCH_URL, urlEncoding(name));
@@ -91,7 +93,7 @@ public class TVSeriesData {
         return imdbURL;
     }
 
-    public TVSeries getTVSeriesInfoFromImdb(String imdbUrl, String name)
+    private TVSeries getTVSeriesInfoFromImdb(String imdbUrl, String name)
             throws ConnectionProblemsException, CantFindObjectException, DataParsingException {
         TVSeries tvSeries;
 
@@ -112,8 +114,15 @@ public class TVSeriesData {
                 stringDate = matcher.group(2);
 
             // Parsing to Date
-            DateFormat dateFormat = new SimpleDateFormat("dd MMMM yyyy", Locale.ENGLISH);
-            Date date = dateFormat.parse(stringDate);
+            DateFormat dateFormat;
+            Date date;
+            try {
+                dateFormat = new SimpleDateFormat("dd MMMM yyyy", Locale.ENGLISH);
+                date = dateFormat.parse(stringDate);
+            } catch (ParseException e) {
+                dateFormat = new SimpleDateFormat("MMMM yyyy", Locale.ENGLISH);
+                date = dateFormat.parse(stringDate);
+            }
 
             tvSeries.setBeginDate(date);
 
@@ -146,7 +155,7 @@ public class TVSeriesData {
         return tvSeries;
     }
 
-    public String urlEncoding(String message) throws UnsupportedEncodingException {
+    public static String urlEncoding(String message) throws UnsupportedEncodingException {
         return URLEncoder.encode(message, "UTF8");
     }
 

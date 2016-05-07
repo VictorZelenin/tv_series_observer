@@ -3,6 +3,8 @@ package main;
 
 import data.DBService;
 import data.dao.EpisodeTranslationDAO;
+import main.exception.CantFindObjectException;
+import main.exception.ConnectionProblemsException;
 import main.sites.*;
 import org.hibernate.Session;
 
@@ -19,14 +21,14 @@ public class EpisodesTranslationsData {
     private DBService dbService = DBService.getInstance();
 
     private void addBasicSites() {
-        sites.add(new AlternativeProduction());
         sites.add(new AmoviesRusSub());
-        sites.add(new Coldfilm());
-        sites.add(new NewStudio());
         sites.add(new Lostfilm());
+//        sites.add(new NewStudio());
+//        sites.add(new Coldfilm());
+//        sites.add(new AlternativeProduction());
     }
 
-    void fillWithBasicData() {
+    void fillWithBasicData() throws ConnectionProblemsException, CantFindObjectException{
         try (Session session = dbService.getSession()) {
             EpisodeTranslationDAO episodeTranslationDAO = new EpisodeTranslationDAO(session);
             for (TVSeriesTranslationSite site : sites) {
@@ -35,7 +37,7 @@ public class EpisodesTranslationsData {
         }
     }
 
-    void update() {
+    void update() throws ConnectionProblemsException, CantFindObjectException{
         try (Session session = dbService.getSession()) {
             EpisodeTranslationDAO episodeTranslationDAO = new EpisodeTranslationDAO(session);
             for (TVSeriesTranslationSite site : sites) {

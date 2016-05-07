@@ -16,7 +16,7 @@ public class TranslatorsData{
      */
     private static final Map<String, String> TRANSLATORS = new HashMap<>();
     static {
-        TRANSLATORS.put("rus_sub", "http://amovies.org/serials-rus-sub/");
+        TRANSLATORS.put("rus_sub", "http://amovies.org/");
         TRANSLATORS.put("Alternative Production", "http://altpro.tv/");
         TRANSLATORS.put("NewStudio", "http://newstudio.tv/");
         TRANSLATORS.put("LostFilm", "http://www.lostfilm.tv/");
